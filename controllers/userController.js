@@ -124,8 +124,7 @@ exports.updateUser = async (req, res) => {
 
     const id = req.params.id;
     const { name, email } = req.body;
-    // res.json(req.params);
-    // return;
+
     const userData = {
       id: id,
       name: name,
@@ -134,14 +133,26 @@ exports.updateUser = async (req, res) => {
 
     const result = await updateUserQuery(userData);
 
-    if (result.isError === false && result.data['affectedRows'] > 0) {
+    if (result.isError === false && result.data["affectedRows"] > 0) {
       res
         .status(successCode)
-        .json(updateResponse(result.isError, result.data, `User with id: ${id} is updated successfully`));
+        .json(
+          updateResponse(
+            result.isError,
+            result.data,
+            `User with id: ${id} is updated successfully`
+          )
+        );
     } else {
       res
         .status(badRequestCode)
-        .json(updateResponse(result.isError, result.data, `Unable to update user with id: ${id}`));
+        .json(
+          updateResponse(
+            result.isError,
+            result.data,
+            `Unable to update user with id: ${id}`
+          )
+        );
     }
   } catch (err) {
     res.status(serverErrorCode).json(updateResponse(result.isError, null, err));
@@ -157,12 +168,24 @@ exports.deleteUser = async (req, res) => {
     }
     const { id } = req.params;
     const result = await deleteUserQuery(id);
-    if (result.isError === false && result.data['affectedRows'] > 0) {
+    if (result.isError === false && result.data["affectedRows"] > 0) {
       return res
         .status(successCode)
-        .json(deleteResponse(result.isError, `User with id: ${id} is deleted successfully`));
+        .json(
+          deleteResponse(
+            result.isError,
+            `User with id: ${id} is deleted successfully`
+          )
+        );
     } else {
-        return res.status(successCode).json(deleteResponse(result.isError, `Unable to deleted user with id: ${id}`));
+      return res
+        .status(successCode)
+        .json(
+          deleteResponse(
+            result.isError,
+            `Unable to deleted user with id: ${id}`
+          )
+        );
     }
   } catch (err) {
     return res
