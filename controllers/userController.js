@@ -1,23 +1,28 @@
 const db = require("../config/db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const { isError } = require("joi");
 
-exports.register = (req, res) => {
+exports.register = async (req, res) => {
   try {
     if (req.body == null) {
-       return res.status(400).json({
-            isError: true,
-            errorMessage: "Request body is missing",
-        })
+      return res.status(400).json({
+        isError: true,
+        errorMessage: "Request body is missing",
+      });
     }
     const { name, email, password } = req.body;
-    const hashedPassword = bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    const [rows] = db.query(
+    const row = await db.query(
       "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
       [name, email, hashedPassword]
     );
-    res.status(201).json({ message: "User registered" });
+    res.status(201).json({
+      isError: false,
+      errorMessage: "User has been registered successfully",
+    //   userId: 
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
