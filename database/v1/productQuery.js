@@ -75,20 +75,22 @@ exports.updateProductQuery = async (product, id) => {
 
 
 //GET SINGLE USER DATA
-exports.getUserQuery = async (id) => {
+exports.getProductQuery = async (id) => {
     try {
-      const query = `SELECT id, name, email FROM users WHERE id = ?`;
+      const query = `SELECT * FROM products WHERE id = ?`;
       const result = await db.query(query, id);
       // return result[0];
       return {
         isError: false,
         data: result[0],
+        message: "Success"
       };
     } catch (err) {
       //LOG ERROR MESSAGE HERE
       return {
         isError: true,
         data: null,
+        message: err
       };
     }
   };

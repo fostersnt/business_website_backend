@@ -22,7 +22,7 @@ const {
   unauthorizedCode,
   createdCode,
 } = require("../../responses/v1/apiStatus");
-const { insertProductQuery, updateProductQuery } = require("../../database/v1/productQuery");
+const { insertProductQuery, updateProductQuery, getProductQuery } = require("../../database/v1/productQuery");
 
 exports.create = async (req, res) => {
   try {
@@ -108,12 +108,13 @@ exports.updateProduct = async (req, res) => {
     const result = await updateProductQuery(product, id);
 
     if (result.isError === false && result.data["affectedRows"] > 0) {
+      const updatedProduct = await getProductQuery(id);
       res
         .status(successCode)
         .json(
           updateResponse(
             result.isError,
-            result.data,
+            updatedProduct.data[0],
             `Product with id: ${id} is updated successfully`
           )
         );
