@@ -1,12 +1,12 @@
 const express = require('express');
 
 const app = express();
-const userRoutes = require("./routes/userRouter");
+const userRoutes = require("./routes/v1/userRouter");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/users", userRoutes)
+app.use("/api/v1/users", userRoutes)
 
 
 const port = process.env.PORT || 5000;

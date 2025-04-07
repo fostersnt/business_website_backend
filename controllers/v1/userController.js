@@ -1,4 +1,4 @@
-const db = require("../config/db");
+const db = require("../../config/db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 // const { isError } = require("joi");
@@ -7,13 +7,13 @@ const {
   updateUserQuery,
   getUserQuery,
   deleteUserQuery,
-} = require("../database/usersQuery");
+} = require("../../database/v1/usersQuery");
 const {
   insertResponse,
   updateResponse,
   getResponse,
   deleteResponse,
-} = require("../responses/apiResponse");
+} = require("../../responses/v1/apiResponse");
 const {
   badRequestCode,
   successCode,
@@ -21,7 +21,7 @@ const {
   notFoundCode,
   unauthorizedCode,
   createdCode,
-} = require("../responses/apiStatus");
+} = require("../../responses/v1/apiStatus");
 
 exports.register = async (req, res) => {
   try {

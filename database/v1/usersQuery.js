@@ -1,4 +1,4 @@
-const db = require("../config/db");
+const db = require("../../config/db");
 const bcrypt = require("bcrypt");
 
 //INSERT USER DATA
@@ -52,12 +52,14 @@ exports.getUserQuery = async (id) => {
       return {
         isError: false,
         data: result[0],
+        model_name: "User",
       };
     } catch (err) {
       //LOG ERROR MESSAGE HERE
       return {
         isError: true,
         data: null,
+        model_name: "User",
       };
     }
   };
@@ -65,7 +67,7 @@ exports.getUserQuery = async (id) => {
   //DELETE SINGLE USER DATA
 exports.deleteUserQuery = async (id) => {
     try {
-      const query = `DELETE FROM products WHERE id = ?`;
+      const query = `DELETE FROM users WHERE id = ?`;
       const result = await db.query(query, id);
       // return result[0];
       return {
