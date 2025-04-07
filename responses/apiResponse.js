@@ -1,17 +1,17 @@
 //INSERT RESPONSE
-exports.insertResponse = (isError, itemId, model_name) => {
+exports.insertResponse = (isError, data, model_name) => {
   return {
     isError: isError,
-    [`${model_name}Id`]: itemId,
+    data: data,
     message: `${model_name} has been created successfully`,
   };
 };
 
 //UPDATE RESPONSE
-exports.updateResponse = (isError, itemId, model_name) => {
+exports.updateResponse = (isError, data, model_name) => {
   return {
     isError: isError,
-    [`${model_name}Id`]: itemId,
+    data: data,
     message: `${model_name} has been updated successfully`,
   };
 };

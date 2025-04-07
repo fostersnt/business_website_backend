@@ -18,5 +18,6 @@ exports.validateLogin = validate(Joi.object({
 }));
 
 exports.validateUpdateUser = validate(Joi.object({
-  name: Joi.string().required()
+  name: Joi.string().required(),
+  email: Joi.string().required().email()
 }));

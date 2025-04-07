@@ -2,8 +2,8 @@ const db = require("../config/db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 // const { isError } = require("joi");
-const { insertUser } = require("../database/usersQuery");
-const { insertResponse } = require("../responses/apiResponse");
+const { insertUserQuery, updateUserQuery } = require("../database/usersQuery");
+const { insertResponse, updateResponse } = require("../responses/apiResponse");
 
 exports.register = async (req, res) => {
   try {
@@ -21,16 +21,22 @@ exports.register = async (req, res) => {
       password: password,
     };
 
-    const result = await insertUser(userData);
+    const result = await insertUserQuery(userData);
     // const row = await db.query(
     //   "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
     //   [name, email, hashedPassword]
     // );
-// return res.json(result)
+    // return res.json(result)
     if (result.isError === false) {
       res
         .status(201)
-        .json(insertResponse(result.isError, result.data['insertId'], result.model_name));
+        .json(
+          insertResponse(
+            result.isError,
+            result.data["insertId"],
+            result.model_name
+          )
+        );
     } else {
       res
         .status(400)
@@ -85,10 +91,44 @@ exports.getUser = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
-  const { id } = req.params;
-  const { name } = req.body;
-  await db.query("UPDATE users SET name = ? WHERE id = ?", [name, id]);
-  res.json({ message: "User updated" });
+  try {
+    if (req.body == null) {
+      return res.status(400).json({
+        isError: true,
+        errorMessage: "Request body is missing",
+      });
+    }
+
+    const id = req.params.id;
+    const { name, email } = req.body;
+// res.json(req.params);
+// return;
+    const userData = {
+      id: id,
+      name: name,
+      email: email,
+    };
+
+    const result = await updateUserQuery(userData);
+
+    if (result.isError === false) {
+      res
+        .status(201)
+        .json(
+            updateResponse(
+            result.isError,
+            result.data,
+            result.model_name
+          )
+        );
+    } else {
+      res
+        .status(400)
+        .json(updateResponse(result.isError, result.data, result.model_name));
+    }
+  } catch (err) {
+    res.status(500).json(updateResponse(result.isError, null, err));
+  }
 };
 
 exports.deleteUser = async (req, res) => {

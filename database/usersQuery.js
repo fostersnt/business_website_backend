@@ -2,7 +2,7 @@ const db = require("../config/db");
 const bcrypt = require("bcrypt");
 
 //INSERT USER DATA
-exports.insertUser = async (userData) => {
+exports.insertUserQuery = async (userData) => {
   try {
     const query = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
     const hashedPassword = await bcrypt.hash(userData.password, 10);
@@ -26,10 +26,10 @@ exports.insertUser = async (userData) => {
 
 
 //UPDATE USER DATA
-exports.updateUser = async (userData) => {
+exports.updateUserQuery = async (userData) => {
     try {
-      const query = "UPDATE users SET name = ?, email = ?";
-      const updateData = [userData.name, userData.email];
+      const query = `UPDATE users SET name = ?, email = ? WHERE id = ?`;
+      const updateData = [userData.name, userData.email, userData.id];
       const result = await db.query(query, updateData);
       // return result[0];
       return {
