@@ -108,6 +108,7 @@ exports.updateProduct = async (req, res) => {
     const result = await updateProductQuery(product, id);
 
     if (result.isError === false && result.data["affectedRows"] > 0) {
+      //GET UPDATED PRODUCT
       const updatedProduct = await getProductQuery(id);
       res
         .status(successCode)

@@ -135,12 +135,14 @@ exports.updateUser = async (req, res) => {
     const result = await updateUserQuery(userData);
 
     if (result.isError === false && result.data["affectedRows"] > 0) {
+      const updatedUser = await getUserQuery(id);
+
       res
         .status(successCode)
         .json(
           updateResponse(
             result.isError,
-            result.data,
+            updatedUser.data[0],
             `User with id: ${id} is updated successfully`
           )
         );
