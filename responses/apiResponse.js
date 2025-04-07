@@ -1,35 +1,34 @@
 //INSERT RESPONSE
-exports.insertResponse = (isError, data, model_name) => {
+exports.insertResponse = (isError, data, message) => {
   return {
     isError: isError,
     data: data,
-    message: `${model_name} has been created successfully`,
+    message: message,
   };
 };
 
 //UPDATE RESPONSE
-exports.updateResponse = (isError, data, model_name) => {
+exports.updateResponse = (isError, data, message) => {
   return {
     isError: isError,
     data: data,
-    message: `${model_name} has been updated successfully`,
+    message: message,
   };
 };
 
 //GET RESPONSE
-exports.getResponse = (isError, data) => {
+exports.getResponse = (isError, data, message) => {
     return {
       isError: isError,
       data: data,
-      message: "Success",
+      message: message,
     };
   };
 
 //DELETE RESPONSE
-exports.deleteResponse = (isError, itemId, model_name) => {
+exports.deleteResponse = (isError, message) => {
   return {
     isError: isError,
-    [`${model_name}Id`]: itemId,
-    message: `${model_name} has been deleted successfully`,
+    message: message,
   };
 };

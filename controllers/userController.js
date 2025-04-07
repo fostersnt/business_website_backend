@@ -2,8 +2,16 @@ const db = require("../config/db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 // const { isError } = require("joi");
-const { insertUserQuery, updateUserQuery } = require("../database/usersQuery");
-const { insertResponse, updateResponse } = require("../responses/apiResponse");
+const {
+  insertUserQuery,
+  updateUserQuery,
+  getUserQuery,
+} = require("../database/usersQuery");
+const {
+  insertResponse,
+  updateResponse,
+  getResponse,
+} = require("../responses/apiResponse");
 
 exports.register = async (req, res) => {
   try {
@@ -80,14 +88,21 @@ exports.getUsers = async (req, res) => {
 };
 
 exports.getUser = async (req, res) => {
-  const { id } = req.params;
-  const [rows] = await db.query(
-    "SELECT id, name, email FROM users WHERE id = ?",
-    [id]
-  );
-  if (rows.length === 0)
-    return res.status(404).json({ error: "User not found" });
-  res.json(rows[0]);
+  try {
+    if (!req.params) {
+      return res.json(getResponse(true, null, "User id missing"));
+    }
+
+    const { id } = req.params;
+
+    const result = await getUserQuery(id);
+    if (result.isError === false) {
+       return res.status(200).json(getResponse(false, result.data[0], "success"));
+    } else {
+        return res.status(404).json(getResponse(true, null, "Failed"));
+    }
+  } catch (err) {
+  }
 };
 
 exports.updateUser = async (req, res) => {
@@ -101,8 +116,8 @@ exports.updateUser = async (req, res) => {
 
     const id = req.params.id;
     const { name, email } = req.body;
-// res.json(req.params);
-// return;
+    // res.json(req.params);
+    // return;
     const userData = {
       id: id,
       name: name,
@@ -114,13 +129,7 @@ exports.updateUser = async (req, res) => {
     if (result.isError === false) {
       res
         .status(201)
-        .json(
-            updateResponse(
-            result.isError,
-            result.data,
-            result.model_name
-          )
-        );
+        .json(updateResponse(result.isError, result.data, result.model_name));
     } else {
       res
         .status(400)
