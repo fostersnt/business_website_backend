@@ -18,12 +18,15 @@ const {
   badRequestCode,
   successCode,
   serverErrorCode,
+  notFoundCode,
+  unauthorizedCode,
+  createdCode,
 } = require("../responses/apiStatus");
 
 exports.register = async (req, res) => {
   try {
     if (req.body == null) {
-      return res.status(400).json({
+      return res.status(badRequestCode).json({
         isError: true,
         errorMessage: "Request body is missing",
       });
@@ -42,23 +45,23 @@ exports.register = async (req, res) => {
     //   [name, email, hashedPassword]
     // );
     // return res.json(result)
-    if (result.isError === false) {
+    if (result.isError === false && result.data["affectedRows"] > 0) {
       res
-        .status(201)
+        .status(createdCode)
         .json(
           insertResponse(
             result.isError,
             result.data["insertId"],
-            result.model_name
+            "User created successfully"
           )
         );
     } else {
       res
-        .status(400)
+        .status(badRequestCode)
         .json(insertResponse(result.isError, result.data, result.model_name));
     }
   } catch (err) {
-    res.status(500).json(insertResponse(result.isError, null, err));
+    res.status(serverErrorCode).json(insertResponse(result.isError, null, err));
   }
 };
 
@@ -82,10 +85,10 @@ exports.login = async (req, res) => {
       });
       res.json({ token });
     } else {
-      res.status(401).json({ error: "Invalid credentials" });
+      res.status(unauthorizedCode).json({ error: "Invalid credentials" });
     }
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(serverErrorCode).json({ error: err.message });
   }
 };
 
@@ -105,10 +108,10 @@ exports.getUser = async (req, res) => {
     const result = await getUserQuery(id);
     if (result.isError === false) {
       return res
-        .status(200)
+        .status(successCode)
         .json(getResponse(false, result.data[0], "success"));
     } else {
-      return res.status(404).json(getResponse(true, null, "Failed"));
+      return res.status(notFoundCode).json(getResponse(true, null, "Failed"));
     }
   } catch (err) {}
 };
@@ -116,7 +119,7 @@ exports.getUser = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
     if (req.body == null) {
-      return res.status(400).json({
+      return res.status(badRequestCode).json({
         isError: true,
         errorMessage: "Request body is missing",
       });
