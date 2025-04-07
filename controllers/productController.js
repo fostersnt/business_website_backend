@@ -54,7 +54,7 @@ exports.register = async (req, res) => {
     } else {
       res
         .status(badRequestCode)
-        .json(insertResponse(result.isError, result.data, "Failed to insert user data"));
+        .json(insertResponse(result.isError, result.data, result.model_name));
     }
   } catch (err) {
     res.status(serverErrorCode).json(insertResponse(result.isError, null, err));
