@@ -22,7 +22,7 @@ const {
   unauthorizedCode,
   createdCode,
 } = require("../../responses/v1/apiStatus");
-const { insertProductQuery } = require("../../database/v1/productQuery");
+const { insertProductQuery, updateProductQuery } = require("../../database/v1/productQuery");
 
 exports.create = async (req, res) => {
   try {
@@ -58,7 +58,7 @@ exports.create = async (req, res) => {
         );
     }
   } catch (err) {
-    res.status(serverErrorCode).json(insertResponse(true, null, 'err'));
+    res.status(serverErrorCode).json(insertResponse(true, null, err));
   }
 };
 
@@ -92,25 +92,20 @@ exports.getUser = async (req, res) => {
   }
 };
 
-exports.updateUser = async (req, res) => {
+exports.updateProduct = async (req, res) => {
   try {
-    if (req.body == null) {
-      return res.status(badRequestCode).json({
-        isError: true,
-        errorMessage: "Request body is missing",
-      });
-    }
+    // if (req.body == null) {
+    //   return res.status(badRequestCode).json({
+    //     isError: true,
+    //     errorMessage: "Request body is missing",
+    //   });
+    // }
 
     const id = req.params.id;
-    const { name, email } = req.body;
 
-    const userData = {
-      id: id,
-      name: name,
-      email: email,
-    };
+    const product = req.body;
 
-    const result = await updateUserQuery(userData);
+    const result = await updateProductQuery(product, id);
 
     if (result.isError === false && result.data["affectedRows"] > 0) {
       res
@@ -119,7 +114,7 @@ exports.updateUser = async (req, res) => {
           updateResponse(
             result.isError,
             result.data,
-            `User with id: ${id} is updated successfully`
+            `Product with id: ${id} is updated successfully`
           )
         );
     } else {
@@ -129,7 +124,7 @@ exports.updateUser = async (req, res) => {
           updateResponse(
             result.isError,
             result.data,
-            `Unable to update user with id: ${id}`
+            `Unable to update product with id: ${id}`
           )
         );
     }
