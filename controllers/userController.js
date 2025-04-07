@@ -6,12 +6,19 @@ const {
   insertUserQuery,
   updateUserQuery,
   getUserQuery,
+  deleteUserQuery,
 } = require("../database/usersQuery");
 const {
   insertResponse,
   updateResponse,
   getResponse,
+  deleteResponse,
 } = require("../responses/apiResponse");
+const {
+  badRequestCode,
+  successCode,
+  serverErrorCode,
+} = require("../responses/apiStatus");
 
 exports.register = async (req, res) => {
   try {
@@ -97,12 +104,13 @@ exports.getUser = async (req, res) => {
 
     const result = await getUserQuery(id);
     if (result.isError === false) {
-       return res.status(200).json(getResponse(false, result.data[0], "success"));
+      return res
+        .status(200)
+        .json(getResponse(false, result.data[0], "success"));
     } else {
-        return res.status(404).json(getResponse(true, null, "Failed"));
+      return res.status(404).json(getResponse(true, null, "Failed"));
     }
-  } catch (err) {
-  }
+  } catch (err) {}
 };
 
 exports.updateUser = async (req, res) => {
@@ -126,22 +134,39 @@ exports.updateUser = async (req, res) => {
 
     const result = await updateUserQuery(userData);
 
-    if (result.isError === false) {
+    if (result.isError === false && result.data['affectedRows'] > 0) {
       res
-        .status(201)
-        .json(updateResponse(result.isError, result.data, result.model_name));
+        .status(successCode)
+        .json(updateResponse(result.isError, result.data, `User with id: ${id} is updated successfully`));
     } else {
       res
-        .status(400)
-        .json(updateResponse(result.isError, result.data, result.model_name));
+        .status(badRequestCode)
+        .json(updateResponse(result.isError, result.data, `Unable to update user with id: ${id}`));
     }
   } catch (err) {
-    res.status(500).json(updateResponse(result.isError, null, err));
+    res.status(serverErrorCode).json(updateResponse(result.isError, null, err));
   }
 };
 
 exports.deleteUser = async (req, res) => {
-  const { id } = req.params;
-  await db.query("DELETE FROM users WHERE id = ?", [id]);
-  res.json({ message: "User deleted" });
+  try {
+    if (!req.params || !req.params.id) {
+      return res
+        .status(badRequestCode)
+        .json(deleteResponse(true, "User id missing"));
+    }
+    const { id } = req.params;
+    const result = await deleteUserQuery(id);
+    if (result.isError === false && result.data['affectedRows'] > 0) {
+      return res
+        .status(successCode)
+        .json(deleteResponse(result.isError, `User with id: ${id} is deleted successfully`));
+    } else {
+        return res.status(successCode).json(deleteResponse(result.isError, `Unable to deleted user with id: ${id}`));
+    }
+  } catch (err) {
+    return res
+      .status(serverErrorCode)
+      .json(deleteResponse(true, "Error occurred while deleting user data"));
+  }
 };

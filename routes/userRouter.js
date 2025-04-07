@@ -9,6 +9,6 @@ router.post("/login", validateRegister, login);
 router.get("/:id", getUser);
 router.post("/", authCheck, validateRegister, getUsers);
 router.post("/update/:id", validateUpdateUser, updateUser);
-router.post("/delete", authCheck, validateRegister, deleteUser);
+router.delete("/:id", validateRegister, deleteUser);
 
 module.exports = router;
