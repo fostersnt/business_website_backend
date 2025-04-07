@@ -23,7 +23,7 @@ const {
   createdCode,
 } = require("../../responses/v1/apiStatus");
 
-exports.register = async (req, res) => {
+exports.create = async (req, res) => {
   try {
     if (req.body == null) {
       return res.status(badRequestCode).json({
