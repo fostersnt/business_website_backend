@@ -109,7 +109,9 @@ exports.getUser = async (req, res) => {
     } else {
       return res.status(notFoundCode).json(getResponse(true, null, "Failed, user not found"));
     }
-  } catch (err) {}
+  } catch (err) {
+    return res.status(notFoundCode).json(getResponse(true, null, "Unable to retrieve user data"));
+  }
 };
 
 exports.updateUser = async (req, res) => {
