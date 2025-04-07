@@ -1,11 +1,8 @@
 const express = require("express");
 const router = express.Router();
+const {register} = require("../controllers/userController");
+const {validateRegister} = require("../validations/userValidation");
 
-router.get("/", (req, res) => {
-    res.json({
-        name: "Foster Amponsah Asante",
-        age: 21
-    });
-});
+router.post("/register", validateRegister, register);
 
 module.exports = router;

@@ -4,10 +4,12 @@ const app = express();
 const userRoutes = require("./routes/userRouter");
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use("/users", userRoutes)
 
 
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 // app.get('/users/:userId/:bookId', (req, res)=>{
 //     const params = JSON.stringify(req.params);
