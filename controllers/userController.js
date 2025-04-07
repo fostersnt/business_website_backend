@@ -102,12 +102,12 @@ exports.getUser = async (req, res) => {
     const { id } = req.params;
 
     const result = await getUserQuery(id);
-    if (result.isError === false) {
+    if (result.isError === false && result.data.length > 0) {
       return res
         .status(successCode)
-        .json(getResponse(false, result.data[0], "success"));
+        .json(getResponse(result.isError, result.data[0], "User found"));
     } else {
-      return res.status(notFoundCode).json(getResponse(true, null, "Failed"));
+      return res.status(notFoundCode).json(getResponse(true, null, "Failed, user not found"));
     }
   } catch (err) {}
 };
