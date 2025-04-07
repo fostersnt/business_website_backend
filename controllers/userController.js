@@ -32,7 +32,7 @@ exports.register = async (req, res) => {
       });
     }
     const { name, email, password } = req.body;
-    // const hashedPassword = await bcrypt.hash(password, 10);
+
     const userData = {
       name: name,
       email: email,
@@ -40,11 +40,7 @@ exports.register = async (req, res) => {
     };
 
     const result = await insertUserQuery(userData);
-    // const row = await db.query(
-    //   "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
-    //   [name, email, hashedPassword]
-    // );
-    // return res.json(result)
+   
     if (result.isError === false && result.data["affectedRows"] > 0) {
       res
         .status(createdCode)
