@@ -21,7 +21,7 @@ exports.register = async (req, res) => {
     res.status(201).json({
       isError: false,
       errorMessage: "User has been registered successfully",
-    //   userId: 
+      //   userId:
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -29,8 +29,14 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
   try {
+    if (!req.body) {
+        return res.json({
+            isError: true,
+            errorMessage: "Request body is missing"
+        })
+    }
+    const { email, password } = req.body;
     const [users] = await db.query("SELECT * FROM users WHERE email = ?", [
       email,
     ]);
