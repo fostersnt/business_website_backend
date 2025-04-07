@@ -1,12 +1,18 @@
 const express = require('express');
 
 const app = express();
+const userRoutes = require("./routes/userRouter");
+
+app.use(express.json());
+app.use("/users", userRoutes)
+
+
 const port = 5000;
 
-app.get('/users/:userId/:bookId', (req, res)=>{
-    const params = JSON.stringify(req.params);
-    res.send(`User ID: ${params}`);
-});
+// app.get('/users/:userId/:bookId', (req, res)=>{
+//     const params = JSON.stringify(req.params);
+//     res.send(`Request Data: ${params}`);
+// });
 
 app.listen(port, ()=>{
     console.log(`Business website backend is running at port: ${port}`);
