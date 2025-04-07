@@ -4,7 +4,7 @@ const {register, login, updateUser, deleteUser, getUsers} = require("../controll
 const {validateRegister} = require("../validations/userValidation");
 const {authCheck} = require("../middleware/authMiddleware");
 
-router.post("/register", authCheck, validateRegister, register);
+router.post("/register", validateRegister, register);
 router.post("/login", validateRegister, login);
 router.post("/", authCheck, validateRegister, getUsers);
 router.post("/update", authCheck, validateRegister, updateUser);

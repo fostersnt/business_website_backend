@@ -1,7 +1,9 @@
 const db = require("../config/db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { isError } = require("joi");
+// const { isError } = require("joi");
+const { insertUser } = require("../database/usersQuery");
+const { insertResponse } = require("../responses/apiResponse");
 
 exports.register = async (req, res) => {
   try {
@@ -12,29 +14,40 @@ exports.register = async (req, res) => {
       });
     }
     const { name, email, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // const hashedPassword = await bcrypt.hash(password, 10);
+    const userData = {
+      name: name,
+      email: email,
+      password: password,
+    };
 
-    const row = await db.query(
-      "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
-      [name, email, hashedPassword]
-    );
-    res.status(201).json({
-      isError: false,
-      errorMessage: "User has been registered successfully",
-      //   userId:
-    });
+    const result = await insertUser(userData);
+    // const row = await db.query(
+    //   "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
+    //   [name, email, hashedPassword]
+    // );
+// return res.json(result)
+    if (result.isError === false) {
+      res
+        .status(201)
+        .json(insertResponse(result.isError, result.data['insertId'], result.model_name));
+    } else {
+      res
+        .status(400)
+        .json(insertResponse(result.isError, result.data, result.model_name));
+    }
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json(insertResponse(result.isError, null, err));
   }
 };
 
 exports.login = async (req, res) => {
   try {
     if (!req.body) {
-        return res.json({
-            isError: true,
-            errorMessage: "Request body is missing"
-        })
+      return res.json({
+        isError: true,
+        errorMessage: "Request body is missing",
+      });
     }
     const { email, password } = req.body;
     const [users] = await db.query("SELECT * FROM users WHERE email = ?", [
