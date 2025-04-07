@@ -62,12 +62,12 @@ exports.create = async (req, res) => {
   }
 };
 
-exports.getUsers = async (req, res) => {
+exports.getProducts = async (req, res) => {
   const [rows] = await db.query("SELECT id, name, email FROM users");
   res.json(rows);
 };
 
-exports.getUser = async (req, res) => {
+exports.getProduct = async (req, res) => {
   try {
     if (!req.params) {
       return res.json(getResponse(true, null, "User id missing"));
@@ -169,3 +169,7 @@ exports.deleteUser = async (req, res) => {
       .json(deleteResponse(true, "Error occurred while deleting user data"));
   }
 };
+
+exports.searchProduct = async (searchText) => {
+
+}

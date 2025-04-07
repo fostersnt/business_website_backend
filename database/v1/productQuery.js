@@ -98,7 +98,7 @@ exports.getProductQuery = async (id) => {
   //DELETE SINGLE USER DATA
 exports.deleteUserQuery = async (id) => {
     try {
-      const query = `DELETE FROM products WHERE id = ?`;
+      const query = "DELETE FROM products WHERE id = ?";
       const result = await db.query(query, id);
       // return result[0];
       return {
@@ -113,3 +113,22 @@ exports.deleteUserQuery = async (id) => {
       };
     }
   };
+
+    //SEARCH PRODUCTS
+exports.searchProductQuery = async (searchText) => {
+  try {
+    const query = "SELECT * FROM products WHERE name LIKE ?";
+    const result = await db.query(query, `%${searchText}%`);
+    // return result[0];
+    return {
+      isError: false,
+      data: result[0],
+    };
+  } catch (err) {
+    //LOG ERROR MESSAGE HERE
+    return {
+      isError: true,
+      data: null,
+    };
+  }
+};
