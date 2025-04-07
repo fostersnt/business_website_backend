@@ -12,7 +12,7 @@ const validateReqParam = (schema) => (req, res, next) => {
     next();
   };
 
-exports.validateRegister = validateReqBody(Joi.object({
+exports.validateUserCreation = validateReqBody(Joi.object({
   name: Joi.string().required(),
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required()

@@ -13,7 +13,7 @@ const {
   updateResponse,
   getResponse,
   deleteResponse,
-} = require("../../responses/apiResponse");
+} = require("../../responses/v1/apiResponse");
 const {
   badRequestCode,
   successCode,
@@ -21,26 +21,21 @@ const {
   notFoundCode,
   unauthorizedCode,
   createdCode,
-} = require("../../responses/apiStatus");
+} = require("../../responses/v1/apiStatus");
+const { insertProductQuery } = require("../../database/v1/productQuery");
 
-exports.register = async (req, res) => {
+exports.create = async (req, res) => {
   try {
-    if (req.body == null) {
-      return res.status(badRequestCode).json({
-        isError: true,
-        errorMessage: "Request body is missing",
-      });
-    }
-    const { name, email, password } = req.body;
+    // if (req.body == null) {
+    //   return res.status(badRequestCode).json({
+    //     isError: true,
+    //     errorMessage: "Request body is missing",
+    //   });
+    // }
+    const productData = req.body;
 
-    const userData = {
-      name: name,
-      email: email,
-      password: password,
-    };
+    const result = await insertProductQuery(productData);
 
-    const result = await insertUserQuery(userData);
-   
     if (result.isError === false && result.data["affectedRows"] > 0) {
       res
         .status(createdCode)
@@ -48,43 +43,22 @@ exports.register = async (req, res) => {
           insertResponse(
             result.isError,
             result.data["insertId"],
-            "User created successfully"
+            result.message
           )
         );
     } else {
       res
         .status(badRequestCode)
-        .json(insertResponse(result.isError, result.data, result.model_name));
+        .json(
+          insertResponse(
+            result.isError,
+            result.data,
+            result.message['message']
+          )
+        );
     }
   } catch (err) {
-    res.status(serverErrorCode).json(insertResponse(result.isError, null, err));
-  }
-};
-
-exports.login = async (req, res) => {
-  try {
-    if (!req.body) {
-      return res.json({
-        isError: true,
-        errorMessage: "Request body is missing",
-      });
-    }
-    const { email, password } = req.body;
-    const [users] = await db.query("SELECT * FROM users WHERE email = ?", [
-      email,
-    ]);
-    const user = users[0];
-
-    if (user && (await bcrypt.compare(password, user.password))) {
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-      });
-      res.json({ token });
-    } else {
-      res.status(unauthorizedCode).json({ error: "Invalid credentials" });
-    }
-  } catch (err) {
-    res.status(serverErrorCode).json({ error: err.message });
+    res.status(serverErrorCode).json(insertResponse(true, null, 'err'));
   }
 };
 
@@ -107,10 +81,14 @@ exports.getUser = async (req, res) => {
         .status(successCode)
         .json(getResponse(result.isError, result.data[0], "User found"));
     } else {
-      return res.status(notFoundCode).json(getResponse(true, null, "Failed, user not found"));
+      return res
+        .status(notFoundCode)
+        .json(getResponse(true, null, "Failed, user not found"));
     }
   } catch (err) {
-    return res.status(notFoundCode).json(getResponse(true, null, "Unable to retrieve user data"));
+    return res
+      .status(notFoundCode)
+      .json(getResponse(true, null, "Unable to retrieve user data"));
   }
 };
 
