@@ -42,12 +42,15 @@ exports.create = async (req, res) => {
     const result = await insertUserQuery(userData);
    
     if (result.isError === false && result.data["affectedRows"] > 0) {
+      const insertId = result.data['insertId'];
+      const insertedUser = await getUserQuery(insertId);
+
       res
         .status(createdCode)
         .json(
           insertResponse(
             result.isError,
-            result.data["insertId"],
+            insertedUser.data[0],
             "User created successfully"
           )
         );
@@ -116,12 +119,12 @@ exports.getUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    if (req.body == null) {
-      return res.status(badRequestCode).json({
-        isError: true,
-        errorMessage: "Request body is missing",
-      });
-    }
+    // if (req.body == null) {
+    //   return res.status(badRequestCode).json({
+    //     isError: true,
+    //     errorMessage: "Request body is missing",
+    //   });
+    // }
 
     const id = req.params.id;
     const { name, email } = req.body;
