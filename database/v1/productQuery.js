@@ -95,7 +95,28 @@ exports.getProductQuery = async (id) => {
     }
   };
 
-  //DELETE SINGLE USER DATA
+  //GET PRODUCTS
+exports.getProductsQuery = async () => {
+  try {
+    const query = "SELECT * FROM products";
+    const result = await db.query(query);
+    // return result[0];
+    return {
+      isError: false,
+      data: result[0],
+      message: "Success"
+    };
+  } catch (err) {
+    //LOG ERROR MESSAGE HERE
+    return {
+      isError: true,
+      data: null,
+      message: err
+    };
+  }
+};
+
+  //DELETE SINGLE PRODUCT DATA
 exports.deleteUserQuery = async (id) => {
     try {
       const query = "DELETE FROM products WHERE id = ?";

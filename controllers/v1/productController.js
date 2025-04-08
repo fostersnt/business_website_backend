@@ -22,7 +22,13 @@ const {
   unauthorizedCode,
   createdCode,
 } = require("../../responses/v1/apiStatus");
-const { insertProductQuery, updateProductQuery, getProductQuery, searchProductQuery } = require("../../database/v1/productQuery");
+const {
+  insertProductQuery,
+  updateProductQuery,
+  getProductQuery,
+  searchProductQuery,
+  getProductsQuery,
+} = require("../../database/v1/productQuery");
 
 exports.create = async (req, res) => {
   try {
@@ -37,7 +43,7 @@ exports.create = async (req, res) => {
     const result = await insertProductQuery(productData);
 
     if (result.isError === false && result.data["affectedRows"] > 0) {
-      const insertedId = result.data['insertId'];
+      const insertedId = result.data["insertId"];
       const insertedProduct = await getProductQuery(insertedId);
       res
         .status(createdCode)
@@ -52,11 +58,7 @@ exports.create = async (req, res) => {
       res
         .status(badRequestCode)
         .json(
-          insertResponse(
-            result.isError,
-            result.data,
-            result.message['message']
-          )
+          insertResponse(result.isError, result.data, result.message["message"])
         );
     }
   } catch (err) {
@@ -65,8 +67,16 @@ exports.create = async (req, res) => {
 };
 
 exports.getProducts = async (req, res) => {
-  const [rows] = await db.query("SELECT id, name, email FROM users");
-  res.json(rows);
+  try {
+    const result = await getProductsQuery();
+    if (result.isError === false && result.data.length > 0) {
+      res.status(successCode).json(getResponse(result.isError, result.data, "Fetch success"));
+    } else {
+      res.status(successCode).json(getResponse(true, result.data, "No products found"));
+    }
+  } catch (err) {
+    res.status(successCode).json(getResponse(true, null, "Error occurred while fetching products"));
+  }
 };
 
 exports.getProduct = async (req, res) => {
@@ -179,9 +189,11 @@ exports.searchProduct = async (req, res) => {
     if (result.isError === false) {
       res.json(getResponse(result.isError, result.data, "Success"));
     } else {
-      res.json(getResponse(result.isError, result.data, "No search data found"));
+      res.json(
+        getResponse(result.isError, result.data, "No search data found")
+      );
     }
   } catch (err) {
-      res.json(getResponse(true, null, err));
+    res.json(getResponse(true, null, err));
   }
-}
+};
