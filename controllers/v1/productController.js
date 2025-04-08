@@ -22,7 +22,7 @@ const {
   unauthorizedCode,
   createdCode,
 } = require("../../responses/v1/apiStatus");
-const { insertProductQuery, updateProductQuery, getProductQuery } = require("../../database/v1/productQuery");
+const { insertProductQuery, updateProductQuery, getProductQuery, searchProductQuery } = require("../../database/v1/productQuery");
 
 exports.create = async (req, res) => {
   try {
@@ -37,12 +37,14 @@ exports.create = async (req, res) => {
     const result = await insertProductQuery(productData);
 
     if (result.isError === false && result.data["affectedRows"] > 0) {
+      const insertedId = result.data['insertId'];
+      const insertedProduct = await getProductQuery(insertedId);
       res
         .status(createdCode)
         .json(
           insertResponse(
             result.isError,
-            result.data["insertId"],
+            insertedProduct.data[0],
             result.message
           )
         );
@@ -170,6 +172,16 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
-exports.searchProduct = async (searchText) => {
-
+exports.searchProduct = async (req, res) => {
+  try {
+    const searchText = req.query.product_name;
+    const result = await searchProductQuery(searchText);
+    if (result.isError === false) {
+      res.json(getResponse(result.isError, result.data, "Success"));
+    } else {
+      res.json(getResponse(result.isError, result.data, "No search data found"));
+    }
+  } catch (err) {
+      res.json(getResponse(true, null, err));
+  }
 }
